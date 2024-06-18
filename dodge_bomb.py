@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import pygame as pg
+import time
 WIDTH, HEIGHT = 1200, 700
 DELTA = {  # 移動量辞書
     pg.K_UP: (0, -5),
@@ -9,6 +10,9 @@ DELTA = {  # 移動量辞書
     pg.K_LEFT: (-5, 0),
     pg.K_RIGHT: (+5, 0),
 }
+
+
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -22,11 +26,17 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     if rct.top < 0 or HEIGHT < rct.bottom:  # 縦方向判定
         tate = False
     return yoko, tate
+
+
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
     bb_img = pg.Surface((20, 20))  # 1辺が20の空のSurfaceを作る
@@ -42,14 +52,17 @@ def main():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bb_rct): # 衝突判定
-            return # ゲームオーバー
+            return gameOver(screen) # ゲームオーバー
         screen.blit(bg_img, [0, 0]) 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for k, v in DELTA.items():
             if key_lst[k]:
                 sum_mv[0] += v[0]
-                sum_mv[1] += v[1]
+                sum_mv[1] += v[1]  
+                
+
+        
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
@@ -65,6 +78,39 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+def gameOver(screen):
+    """
+    こうかとんが爆弾に衝突した際に
+    ・画面をブラックアウトする
+    ・泣いているこうかとんと
+    ・「Game Over」の文字列を表示する
+    ・表示時間は５秒間
+    """
+
+    black_img = pg.Surface((WIDTH,HEIGHT))
+    pg.draw.rect(black_img,(0,0,0), pg.Rect(0,0,WIDTH, HEIGHT))
+    black_img.set_alpha(200)
+    black_rct = black_img.get_rect()
+    screen.blit(black_img,black_rct)
+    fonto = pg.font.Font(None,80)
+    txt = fonto.render("Game Over",True,(255, 255, 255))
+    txt_rct = txt.get_rect()
+    txt_rct.center=WIDTH/2, HEIGHT/2
+    screen.blit(txt,txt_rct)
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 2.0)
+    kk_rct = kk_img.get_rect()
+    kk_rct.center = WIDTH/2-250, HEIGHT/2
+    screen.blit(kk_img,kk_rct)
+    kk_rct.center = WIDTH/2+250, HEIGHT/2
+    screen.blit(kk_img,kk_rct)
+    pg.display.update()
+    time.sleep(5)
+
+
+    
+
+
 if __name__ == "__main__":
     pg.init()
     main()
