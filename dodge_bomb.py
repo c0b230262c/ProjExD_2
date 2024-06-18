@@ -36,7 +36,7 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
-    kk_imgs = kt_angle()
+    kk_imgs = kt_angle(sum_mv)
     kk_img = kk_imgs[0, 0]
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
@@ -108,12 +108,11 @@ def gameOver(screen):
     pg.display.update()
     time.sleep(5)
 
-def kt_angle():
+def kt_angle(sum_mv):
     kt_d = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
-    kt_f = pg.transform.flip(pg.image.load("fig/3.png"), True, False)
+    kt_f = pg.transform.flip(pg.image.load("fig/3.png"), True, False) # 反転の追加
     print(kt_d)
     return {
-        (0, 0):kt_d,
         (-5, 0):kt_d,
         (-5, +5):pg.transform.rotozoom(kt_d, 45, 2.0), 
         (0, +5):pg.transform.rotozoom(kt_f, 90, 2.0),
@@ -124,7 +123,8 @@ def kt_angle():
         (-5, -5):pg.transform.rotozoom(kt_d, -45, 2.0),
     }    
 
-    
+    if sum_mv == [0, 0]:
+        return pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
 
 
 if __name__ == "__main__":
