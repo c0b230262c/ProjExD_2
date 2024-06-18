@@ -36,7 +36,8 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
-    
+    kk_imgs = kt_angle()
+    kk_img = kk_imgs[0, 0]
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
     bb_img = pg.Surface((20, 20))  # 1辺が20の空のSurfaceを作る
@@ -67,7 +68,7 @@ def main():
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
-
+        kk_img = kt_angle(sum_mv)
         bb_rct.move_ip(vx, vy)
         yoko, tate = check_bound(bb_rct)
         if not yoko:  # 横方向にはみ出たら
@@ -107,6 +108,21 @@ def gameOver(screen):
     pg.display.update()
     time.sleep(5)
 
+def kt_angle():
+    kt_d = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    kt_f = pg.transform.flip(pg.image.load("fig/3.png"), True, False)
+    print(kt_d)
+    return {
+        (0, 0):kt_d,
+        (-5, 0):kt_d,
+        (-5, +5):pg.transform.rotozoom(kt_d, 45, 2.0), 
+        (0, +5):pg.transform.rotozoom(kt_f, 90, 2.0),
+        (+5, +5):pg.transform.rotozoom(kt_f, 45, 2.0),
+        (+5, 0):kt_f,
+        (+5, -5):pg.transform.rotozoom(kt_f, -45, 2.0),
+        (0, -5):pg.transform.rotozoom(kt_f, -90, 2.0),
+        (-5, -5):pg.transform.rotozoom(kt_d, -45, 2.0),
+    }    
 
     
 
