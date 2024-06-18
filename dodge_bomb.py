@@ -35,8 +35,8 @@ def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
-    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
-    kk_imgs = kt_angle(sum_mv)
+    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 1.0)
+    kk_imgs = kt_angle()
     kk_img = kk_imgs[0, 0]
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
@@ -61,14 +61,13 @@ def main():
             if key_lst[k]:
                 sum_mv[0] += v[0]
                 sum_mv[1] += v[1]  
-                
-
+        tup_mv = tuple(sum_mv)
+        kk_img = kk_imgs[tup_mv]
         
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
-        kk_img = kt_angle(sum_mv)
         bb_rct.move_ip(vx, vy)
         yoko, tate = check_bound(bb_rct)
         if not yoko:  # 横方向にはみ出たら
@@ -108,23 +107,23 @@ def gameOver(screen):
     pg.display.update()
     time.sleep(5)
 
-def kt_angle(sum_mv):
+def kt_angle():
     kt_d = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
     kt_f = pg.transform.flip(pg.image.load("fig/3.png"), True, False) # 反転の追加
     print(kt_d)
-    return {
-        (-5, 0):kt_d,
-        (-5, +5):pg.transform.rotozoom(kt_d, 45, 2.0), 
-        (0, +5):pg.transform.rotozoom(kt_f, 90, 2.0),
-        (+5, +5):pg.transform.rotozoom(kt_f, 45, 2.0),
-        (+5, 0):kt_f,
-        (+5, -5):pg.transform.rotozoom(kt_f, -45, 2.0),
-        (0, -5):pg.transform.rotozoom(kt_f, -90, 2.0),
-        (-5, -5):pg.transform.rotozoom(kt_d, -45, 2.0),
+    return { # 向きの辞書
+        (0, 0):kt_d, # デフォルト
+        (-5, 0):kt_d, # 左
+        (-5, +5):pg.transform.rotozoom(kt_d, 45, 1.0), # 左下
+        (0, +5):pg.transform.rotozoom(kt_f, -90, 2.0), # 下
+        (+5, +5):pg.transform.rotozoom(kt_f, -45, 2.0), # 右下
+        (+5, 0):pg.transform.rotozoom(kt_f, 0, 2.0), # 右
+        (+5, -5):pg.transform.rotozoom(kt_f, 45, 2.0), # 右上
+        (0, -5):pg.transform.rotozoom(kt_f, 90, 2.0), # 上
+        (-5, -5):pg.transform.rotozoom(kt_d, -45, 1.0), # 左上
     }    
 
-    if sum_mv == [0, 0]:
-        return pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    
 
 
 if __name__ == "__main__":
